@@ -1,19 +1,21 @@
 const request = require('request');
-const sSector = 'Trojan Reach';
 const baseURL = 'https://travellermap.com/data/';
 const fs = require('fs');
-const bPAR5EData = true;
 
-let sFileName = sSector
+const sSector = 'Reft';
+const bRefManualData = true;
 
-if (bPAR5EData) {
-  sFileName = sFileName + ' Worlds.txt'
-} else {
+let sFileName = `./data/${sSector}`;
+
+if (bRefManualData) {
   sFileName = sFileName + ' Ref Manual.txt'
+} else {
+  sFileName = sFileName + ' Worlds.txt'
 }
 
 const writeToFile = fs.createWriteStream(sFileName);
 
+// These override asking for the full sector
 // fetchsWorldData(sSector,'Sword Worlds', 'A');
 // fetchsWorldData(sSector,'Menorial', 'A');
 
@@ -66,7 +68,7 @@ async function fetchsWorldData(sSector, sSubSector, sSubSectorIndex)
 
     console.log(text);
 
-    if (!bPAR5EData) {
+    if (bRefManualData) {
       let worldData =
         '#!;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
         '##;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
@@ -155,7 +157,7 @@ async function readLine(sSector, sSubsector, sWorldData) {
     sName = '_' + sName;
   }
 
-  if (bPAR5EData) {
+  if (!bRefManualData) {
 
     const worldToStore =
       'name|' + sName + '\r\n' +
