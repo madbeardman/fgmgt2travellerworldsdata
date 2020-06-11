@@ -1,14 +1,16 @@
-Greetings,
+This app is written to generate the data files (text) for the Fantasy Grounds internal parsing application.  It saves the many hours building them by hand, or copying and pasting them from PDFs etc.
 
-This app uses the TravellerMAP API's to pull down data for a sector.
+To do this we use the TravellerMAP API's.  This amongst other things, allows this app to pull down the UWP data for a sector split by subsectors.
+
+<https://travellermap.com/doc/api>
 
 This includes the subsectors and all worlds within those subsectors.
 
 The files are written as text files in the `./data` sub-folder using the sector name as the basis.
 
-The format of these files are for use within Fantasy Grounds.  At this moment in time, the output for the Reference Manual is one format, the other is the format to import the data into the worlds lists.
+The format of these files are fixed, one is for the Reference Manual and the other is for the World data.  There are plans to produce Fantasy Grounds mod file in a future build.
 
-It's written using NodeJS v12.  Make sure you are using v12 and above.
+It's written using NodeJS v12.  Make sure you are using v12 and above before you run this.
 
 **To install**
 
@@ -23,6 +25,10 @@ That should install all the libraries required for the app.
 `npm start`
 
 Please note that if data already exists for the sector, it will be replaced with the new data.
+
+**Tests**
+
+There are currently no Unit Tests.
 
 ### Configuring what data format is used
 
