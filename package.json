@@ -1,0 +1,15 @@
+{
+  "name": "sectorconsumer",
+  "version": "1.0.0",
+  "description": "Consumes sector, subsector and worlds data from Travellermap and puts the format ready for PAR5E integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Colin 'MadBeardMan' Richardson",
+  "license": "ISC",
+  "dependencies": {
+    "line-reader": "^0.4.0",
+    "request": "^2.88.2"
+  }
+}
