@@ -1,14 +1,15 @@
 const fs = require('fs');
-const request = require('request');
+const request = require('request-promise');
 const baseURL = 'https://travellermap.com/data/';
+const builder = require('xmlbuilder');
 let writeToFile;
 let bRefManualData = false;
 let bWorldData = false;
 let bXMLModule = false
+let nodeNumber = 1;
 
 module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildType) {
 
-    //Create the stream
     let sFileName = `${sDataFolder}${sSector}`;
 
     switch (sBuildType) {
@@ -25,18 +26,24 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
     if (bXMLModule) {
       sFileName = `${sDataFolder}db.xml`;
-      await createXMLDefinitionFile(sDataFolder);
+      const sDefinitionFileName = `${sDataFolder}definition.xml`;
+      await createXMLDefinitionFile(sSector, sDefinitionFileName);
     } else if (bWorldData) {
       sFileName = sFileName + ' Worlds.txt'
     } else {
       sFileName = sFileName + ' Ref Manual.txt'
     }
 
+    //Create the stream
     try {
       writeToFile = fs.createWriteStream(sFileName);
     } catch (err) {
       console.error(err);
       process.exit(1);
+    }
+
+    if (bXMLModule) {
+      await createXMLDDBFile(sSector);
     }
 
     const options = {
@@ -55,9 +62,14 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       }
       let json = JSON.parse(body);
 
-      json.Subsectors.forEach(async subsector => {
+      for (const subsector of json.Subsectors) {
         await fetchsWorldData(sSector, subsector.Name, subsector.Index);
-      });
+      };
+
+      if (bXMLModule) {
+        await createXMLDDBFileEnd();
+      }
+
     });
 
   }
@@ -81,10 +93,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
       const text = json.split('\r\n').filter(x => x);
 
-      console.log(text);
-
       if (bRefManualData) {
-        console.log(bRefManualData);
         let worldData =
           '#!;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
           '##;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
@@ -100,7 +109,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
           worldData = worldData + '#te;\r\n';
 
-          await writeToFile.write(worldData);
+          return writeToFile.write(worldData);
 
       } else {
         for (const sWorld of text) {
@@ -139,8 +148,6 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
     const aTradeCodes = sCodesComments.split(' ');
     let sTradeCodes = ''
 
-    // console.log(aTradeCodes);
-
     for (const sTradeCode of aTradeCodes) {
       let validTradeCode = await getTradeCode(sTradeCode);
       if (validTradeCode) {
@@ -149,8 +156,6 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
     }
 
     sTradeCodes = sTradeCodes.trim();
-
-    // console.log(sTradeCodes);
 
     const sStarportQuality = sUWP.substring(0,1);
     const sStarportQualityText = await getStarportQuality(sStarportQuality);
@@ -173,7 +178,43 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       sName = '_' + sName;
     }
 
-    if (!bRefManualData) {
+    if (bXMLModule) {
+
+      const nodeName = 'id-' + String(nodeNumber).padStart(5, '0');
+
+      const worldToStore = `     <${nodeName}>\r\n` +
+      `       <atmosphere_type type="string">${sAtmosphereType}</atmosphere_type>\r\n` +
+      `       <atmosphere_type_text type="string">${sAtmosphereTypeText}</atmosphere_type_text>\r\n` +
+      `       <bases type="string">${sBases}</bases>\r\n` +
+      `       <goodslist>\r\n` +
+      `       </goodslist>\r\n` +
+      `       <government_type type="string">${sGovernmentType}</government_type>\r\n` +
+      `       <government_type_text type="string">${sGovernmentTypeText}</government_type_text>\r\n` +
+      `       <hexlocation type="string">${sHexNbr}</hexlocation>\r\n` +
+      `       <hydrographics type="string">${sHydrographics}</hydrographics>\r\n` +
+      `       <hydrographics_text type="string">${sHydrographicsText}</hydrographics_text>\r\n` +
+      `       <law_level type="string">${sLawLevel}</law_level>\r\n` +
+      `       <law_level_text type="string">${sLawLevelText}</law_level_text>\r\n` +
+      `       <name type="string">${sName}</name>\r\n` +
+      `       <population type="string">${sPopulation}</population>\r\n` +
+      `       <population_text type="string">${sPopulationText}</population_text>\r\n` +
+      `       <size type="string">${sSize}</size>\r\n` +
+      `       <size_text type="string">${sSizeText}</size_text>\r\n` +
+      `       <starport_quality type="string">${sStarportQuality}</starport_quality>\r\n` +
+      `       <starport_quality_text type="string">${sStarportQualityText}</starport_quality_text>\r\n` +
+      `       <tech_level type="string">${sTechLevel}</tech_level>\r\n` +
+      `       <tech_level_text type="string">${sTechLevelText}</tech_level_text>\r\n` +
+      `       <trade_codes type="string">${sBases}</trade_codes>\r\n` +
+      `       <travel_code type="string">${sTradeCodes}/travel_code>\r\n` +
+      `       <uwp type="string">${sBases}</uwp>\r\n` +
+      `     </${nodeName}>\r\n`
+
+      nodeNumber++;
+
+      await writeToFile.write(worldToStore);
+
+    }
+    else if (bRefManualData) {
 
       const worldToStore =
         'name|' + sName + '\r\n' +
@@ -199,18 +240,18 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
         'government_type|' + sGovernmentType + '\r\n' +
         'government_type_text|' + sGovernmentTypeText + '\r\n' +
         'law_level|' + sLawLevel + '\r\n' +
-        'law_level_text|' + sLawLevel + '\r\n' +
+        'law_level_text|' + sLawLevelText + '\r\n' +
         'tech_level|' + sTechLevel + '\r\n' +
         'tech_level_text|' + sTechLevelText + '\r\n' +
         '\r\n'
 
         await writeToFile.write(worldToStore);
     } else {
-        return `#tr;${sName};${sHexNbr};${sBases};2:${sUWP};${sTradeCodes};1:${sZone};2:${sAllegianceText};1:${sGasGiant}\r\n`;
-    }
-  }
+        await `#tr;${sName};${sHexNbr};${sBases};2:${sUWP};${sTradeCodes};1:${sZone};2:${sAllegianceText};1:${sGasGiant}\r\n`;
+    };
+  };
 
-  function getAllegiance(sAllegiance) {
+  async function getAllegiance(sAllegiance) {
 
     const aAllegiances = {};
 
@@ -296,7 +337,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getTradeCode(sTradeCode) {
+  async function getTradeCode(sTradeCode) {
 
     const aTradeCodes = {};
 
@@ -323,7 +364,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getStarportQuality(sStarportQuality) {
+  async function getStarportQuality(sStarportQuality) {
 
     const aStarportQuality = {};
 
@@ -338,7 +379,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getSize(sSize) {
+  async function getSize(sSize) {
 
     const aSize = {};
 
@@ -358,7 +399,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getAtmosphereType(sAtmosphereType) {
+  async function getAtmosphereType(sAtmosphereType) {
 
     const aAtmosphereType = {};
 
@@ -383,7 +424,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getHydrographics(sHydrographics) {
+  async function getHydrographics(sHydrographics) {
 
     const aHydrographics = {};
 
@@ -404,7 +445,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getPopulation(sPopulation) {
+  async function getPopulation(sPopulation) {
 
     const aPopulation = {};
 
@@ -426,7 +467,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getGovernmentType(sGovernmentType) {
+  async function getGovernmentType(sGovernmentType) {
 
     const aGovernmentType = {};
 
@@ -449,7 +490,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  function getLawLevel(sLawLevel) {
+  async function getLawLevel(sLawLevel) {
 
     const aLawLevel = {};
 
@@ -466,6 +507,60 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
     return aLawLevel[sLawLevel];
   }
+
+  async function createXMLDefinitionFile(sSector, sDefinitionFileName) {
+
+    const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
+    '<root version="3.3" release="1|CoreRPG:4">\r\n' +
+      '  <name>' + sSector + ' Worlds Data</name>\r\n' +
+      '  <category></category>\r\n' +
+      '  <author>Colin `MadBeardMan` Richardson</author>\r\n' +
+      '  <ruleset>MGT2</ruleset>\r\n' +
+    '</root>'
+
+    return fs.writeFileSync(sDefinitionFileName, sXML);
+  }
+
+  async function createXMLDDBFile(sSector) {
+
+    const sName = sSector.replace(/\s/g, '').toLowerCase() + 'worldsdata';
+
+    const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
+    '<root version="3.3" release="1|CoreRPG:4">\r\n' +
+    '  <library>\r\n' +
+    '    <worldsdata static="true">\r\n' +
+    '      <categoryname type="string"></categoryname>\r\n' +
+    `      <name type="string">${sName}</name>\r\n` +
+    '      <entries>\r\n' +
+    '        <worlds>\r\n' +
+    '          <librarylink type="windowreference">\r\n' +
+    '            <class>reference_list</class>\r\n' +
+    '            <recordname>..</recordname>\r\n' +
+    '          </librarylink>\r\n' +
+    '          <name type="string">Worlds</name>\r\n' +
+    '          <recordtype type="string">worlds</recordtype>\r\n' +
+    '        </worlds>\r\n' +
+    '      </entries>\r\n' +
+    '    </worldsdata>\r\n' +
+    '  </library>\r\n' +
+    '  <worlds>\r\n' +
+    '    <category name="" baseicon="0" decalicon="0">\r\n';
+
+    return writeToFile.write(sXML);
+
+  }
+
+  async function createXMLDDBFileEnd() {
+
+    const sXML = '    </category>\r\n' +
+    '  </worlds>\r\n' +
+    '</root>\r\n';
+
+    return writeToFile.write(sXML);
+  }
+
+
+
 
 
 

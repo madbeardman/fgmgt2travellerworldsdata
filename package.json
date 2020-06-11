@@ -12,6 +12,7 @@
   "dependencies": {
     "line-reader": "^0.4.0",
     "request": "^2.88.2",
+    "request-promise": "^4.2.5",
     "xmlbuilder": "^15.1.1"
   }
 }

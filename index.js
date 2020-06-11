@@ -15,7 +15,7 @@ try {
 }
 
 // Configure this
-const sSector = 'Reft';
-const sBuildType = 'ref';  // options: module, ref or world
+const sSector = 'Deneb';
+const sBuildType = 'module';  // options: module, ref or world
 
 fetchSectorWorlds(sSector, sDataFolder, sBuildType);
