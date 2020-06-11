@@ -1,27 +1,43 @@
 const fs = require('fs');
 const request = require('request');
 const baseURL = 'https://travellermap.com/data/';
-let bRefManualData;
 let writeToFile;
+let bRefManualData = false;
+let bWorldData = false;
+let bXMLModule = false
 
-module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManualData) {
+module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildType) {
 
     //Create the stream
     let sFileName = `${sDataFolder}${sSector}`;
 
-    if (bRefManualData) {
-      sFileName = sFileName + ' Ref Manual.txt'
-    } else {
-      sFileName = sFileName + ' Worlds.txt'
+    switch (sBuildType) {
+      case 'module':
+        bXMLModule = true;
+        break;
+      case 'world':
+        bWorldData = true;
+        break;
+      default:
+        bRefManualData = true;
+        break;
     }
+
+    if (bXMLModule) {
+      sFileName = `${sDataFolder}db.xml`;
+      await createXMLDefinitionFile(sDataFolder);
+    } else if (bWorldData) {
+      sFileName = sFileName + ' Worlds.txt'
+    } else {
+      sFileName = sFileName + ' Ref Manual.txt'
+    }
+
     try {
       writeToFile = fs.createWriteStream(sFileName);
     } catch (err) {
       console.error(err);
       process.exit(1);
     }
-
-    this.bRefManualData = bRefManualData;
 
     const options = {
       url: encodeURI(`https://travellermap.com/api/metadata?sector=${sSector}`),
@@ -41,7 +57,6 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
 
       json.Subsectors.forEach(async subsector => {
         await fetchsWorldData(sSector, subsector.Name, subsector.Index);
-        // console.log(subsector);
       });
     });
 
@@ -69,6 +84,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
       console.log(text);
 
       if (bRefManualData) {
+        console.log(bRefManualData);
         let worldData =
           '#!;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
           '##;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
@@ -311,10 +327,10 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
 
     const aStarportQuality = {};
 
-      aStarportQuality["A"] = "Excellent",
-      aStarportQuality["B"] = "Good",
-      aStarportQuality["C"] = "Routine",
-      aStarportQuality["D"] = "Poor",
+    aStarportQuality["A"] = "Excellent",
+    aStarportQuality["B"] = "Good",
+    aStarportQuality["C"] = "Routine",
+    aStarportQuality["D"] = "Poor",
     aStarportQuality["E"] = "Frontier",
     aStarportQuality["X"] = "No Starport"
 
@@ -328,14 +344,14 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
 
     aSize["1"] = "1,600km",
     aSize["2"] = "3,200km, Triton, Luna, Europa",
-      aSize["3"] = "4,800km, Mercury, Ganymede",
-      aSize["4"] = "6,400km, Mars",
-      aSize["5"] = "8,000km",
-      aSize["6"] = "9,600km",
-      aSize["7"] = "11,200km",
-      aSize["8"] = "12,800km Earth",
-      aSize["9"] = "14,400km",
-      aSize["10"] = "16,000km",
+    aSize["3"] = "4,800km, Mercury, Ganymede",
+    aSize["4"] = "6,400km, Mars",
+    aSize["5"] = "8,000km",
+    aSize["6"] = "9,600km",
+    aSize["7"] = "11,200km",
+    aSize["8"] = "12,800km Earth",
+    aSize["9"] = "14,400km",
+    aSize["10"] = "16,000km",
     aSize["A"] = "16,000km"
 
     return aSize[sSize];
@@ -393,17 +409,17 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
     const aPopulation = {};
 
     aPopulation["0"] = "None",
-      aPopulation["1"] = "Few",
-      aPopulation["2"] = "Hundreds",
-      aPopulation["3"] = "Thousands",
-      aPopulation["4"] = "Tens of Thousands",
-      aPopulation["5"] = "Hundreds of thousands",
-      aPopulation["6"] = "Millions",
-      aPopulation["7"] = "Tens of millions",
-      aPopulation["8"] = "Hundreds of millions",
-      aPopulation["9"] = "Billions",
-      aPopulation["A"] = "Tens of billions",
-      aPopulation["B"] = "Hundreds of billions",
+    aPopulation["1"] = "Few",
+    aPopulation["2"] = "Hundreds",
+    aPopulation["3"] = "Thousands",
+    aPopulation["4"] = "Tens of Thousands",
+    aPopulation["5"] = "Hundreds of thousands",
+    aPopulation["6"] = "Millions",
+    aPopulation["7"] = "Tens of millions",
+    aPopulation["8"] = "Hundreds of millions",
+    aPopulation["9"] = "Billions",
+    aPopulation["A"] = "Tens of billions",
+    aPopulation["B"] = "Hundreds of billions",
     aPopulation["C"] = "Trillions"
 
     return aPopulation[sPopulation];
@@ -415,18 +431,18 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
     const aGovernmentType = {};
 
     aGovernmentType["0"] = "None"
-      aGovernmentType["1"] = "Company/corporation",
-      aGovernmentType["2"] = "Participating democracy",
-      aGovernmentType["3"] = "Self-perpetuating oligarchy",
-      aGovernmentType["4"] = "Representative democracy",
-      aGovernmentType["5"] = "Feudal technocracy",
-      aGovernmentType["6"] = "Captive government",
-      aGovernmentType["7"] = "Balkanisation",
-      aGovernmentType["8"] = "Civil service bureaucracy",
-      aGovernmentType["9"] = "Impersonal Bureaucracy",
-      aGovernmentType["A"] = "Charismatic dictator",
-      aGovernmentType["B"] = "Non-charismatic leader",
-      aGovernmentType["C"] = "Charismatic oligarchy",
+    aGovernmentType["1"] = "Company/corporation",
+    aGovernmentType["2"] = "Participating democracy",
+    aGovernmentType["3"] = "Self-perpetuating oligarchy",
+    aGovernmentType["4"] = "Representative democracy",
+    aGovernmentType["5"] = "Feudal technocracy",
+    aGovernmentType["6"] = "Captive government",
+    aGovernmentType["7"] = "Balkanisation",
+    aGovernmentType["8"] = "Civil service bureaucracy",
+    aGovernmentType["9"] = "Impersonal Bureaucracy",
+    aGovernmentType["A"] = "Charismatic dictator",
+    aGovernmentType["B"] = "Non-charismatic leader",
+    aGovernmentType["C"] = "Charismatic oligarchy",
     aGovernmentType["D"] = "Religious dictatorship"
 
     return aGovernmentType[sGovernmentType];
@@ -437,16 +453,16 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, bRefManu
 
     const aLawLevel = {};
 
-      aLawLevel["0"] = "No restrictions – heavy armour and a handy weapon recommended...",
-      aLawLevel["1"] = "No Poison gas, explosives, undetectable weapons, WMD or Battle Dress",
-      aLawLevel["2"] = "No Portable energy and laser weapons or Combat armour",
-      aLawLevel["3"] = "No Military weapons or Flak armour",
-      aLawLevel["4"] = "No Light assault weapons and submachine guns or Cloth armour",
-      aLawLevel["5"] = "No Personal concealable weapons or Mesh armour",
-      aLawLevel["6"] = "No firearms except shotguns & stunners; carrying weapons discouraged",
-      aLawLevel["7"] = "No Shotguns",
-      aLawLevel["8"] = "No bladed weapons, stunners or visible armour",
-      aLawLevel["9"] = "No weapons, No armour"
+    aLawLevel["0"] = "No restrictions – heavy armour and a handy weapon recommended...",
+    aLawLevel["1"] = "No Poison gas, explosives, undetectable weapons, WMD or Battle Dress",
+    aLawLevel["2"] = "No Portable energy and laser weapons or Combat armour",
+    aLawLevel["3"] = "No Military weapons or Flak armour",
+    aLawLevel["4"] = "No Light assault weapons and submachine guns or Cloth armour",
+    aLawLevel["5"] = "No Personal concealable weapons or Mesh armour",
+    aLawLevel["6"] = "No firearms except shotguns & stunners; carrying weapons discouraged",
+    aLawLevel["7"] = "No Shotguns",
+    aLawLevel["8"] = "No bladed weapons, stunners or visible armour",
+    aLawLevel["9"] = "No weapons, No armour"
 
     return aLawLevel[sLawLevel];
   }

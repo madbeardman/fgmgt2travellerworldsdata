@@ -16,6 +16,6 @@ try {
 
 // Configure this
 const sSector = 'Reft';
-const bRefManualData = false;
+const sBuildType = 'ref';  // options: module, ref or world
 
-fetchSectorWorlds(sSector, sDataFolder, bRefManualData);
+fetchSectorWorlds(sSector, sDataFolder, sBuildType);
