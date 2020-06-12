@@ -32,13 +32,13 @@ There are currently no Unit Tests.
 
 ### Configuring what data format is used
 
-At the moment, there's no UI with this app, I don't see the need for it.
+At the moment, there's no UI with this app, I don't see the need for it for my own needs, but might create a UI in the future, it really needs refactoring now everything is there.
 
 Editing the main file, `index.js` at the top you'll find something like:
 
 > const sSector = 'Reft';
 
-> const bRefManualData = true;
+> const sBuildType = 'module';
 
 You can change the sector by editing it here, note that it's case senstive and spelling must be accurate, otherwise an error will be thrown.
 
