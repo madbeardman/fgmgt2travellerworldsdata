@@ -518,7 +518,7 @@ async function createXMLDefinitionFile(sSector, sDefinitionFileName) {
   '<root version="3.3" release="1|CoreRPG:4">\r\n' +
     '  <name>' + sSector + ' Worlds Data</name>\r\n' +
     '  <category></category>\r\n' +
-    '  <author>Colin `MadBeardMan` Richardson</author>\r\n' +
+    '  <author>Sector World Data</author>\r\n' +
     '  <ruleset>MGT2</ruleset>\r\n' +
   '</root>'
 

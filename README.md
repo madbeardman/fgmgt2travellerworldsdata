@@ -42,6 +42,12 @@ Editing the main file, `index.js` at the top you'll find something like:
 
 You can change the sector by editing it here, note that it's case senstive and spelling must be accurate, otherwise an error will be thrown.
 
+### License
 
+This application is under the ISC License, however the data generated is not, please see here for further information:
 
+<https://www.farfuture.net/FFEFairUsePolicy2008.pdf>
+
+If you use this application, please give me credit, thanks.
+Colin 'MadBeardMan' Richardson
 
