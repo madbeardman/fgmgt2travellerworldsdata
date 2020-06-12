@@ -1,12 +1,13 @@
 const fs = require('fs');
 const request = require('request-promise');
 const baseURL = 'https://travellermap.com/data/';
-const builder = require('xmlbuilder');
+const EasyZip = require('easy-zip2').EasyZip;
 let writeToFile;
 let bRefManualData = false;
 let bWorldData = false;
 let bXMLModule = false
 let nodeNumber = 1;
+let sDefinitionFileName = '';
 
 module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildType) {
 
@@ -26,7 +27,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
     if (bXMLModule) {
       sFileName = `${sDataFolder}db.xml`;
-      const sDefinitionFileName = `${sDataFolder}definition.xml`;
+      sDefinitionFileName = `${sDataFolder}definition.xml`;
       await createXMLDefinitionFile(sSector, sDefinitionFileName);
     } else if (bWorldData) {
       sFileName = sFileName + ' Worlds.txt'
@@ -68,6 +69,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
       if (bXMLModule) {
         await createXMLDDBFileEnd();
+        await buildZip(sSector, sFileName, sDefinitionFileName);
       }
 
     });
@@ -174,15 +176,13 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
     const sTechLevel = sUWP.substring(8,9);
     const sTechLevelText = 'Tech Level: ' + parseInt(sTechLevel,16);
 
-    if (!isNaN(sName.substring(0,1))) {
-      sName = '_' + sName;
-    }
-
     if (bXMLModule) {
 
       const nodeName = 'id-' + String(nodeNumber).padStart(5, '0');
 
       const worldToStore = `     <${nodeName}>\r\n` +
+      `       <sector type="string">${sSectorName}</sector>\r\n` +
+      `       <subsector type="string">${sSubSectorName}</subsector>\r\n` +
       `       <atmosphere_type type="string">${sAtmosphereType}</atmosphere_type>\r\n` +
       `       <atmosphere_type_text type="string">${sAtmosphereTypeText}</atmosphere_type_text>\r\n` +
       `       <bases type="string">${sBases}</bases>\r\n` +
@@ -205,7 +205,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       `       <tech_level type="string">${sTechLevel}</tech_level>\r\n` +
       `       <tech_level_text type="string">${sTechLevelText}</tech_level_text>\r\n` +
       `       <trade_codes type="string">${sBases}</trade_codes>\r\n` +
-      `       <travel_code type="string">${sTradeCodes}/travel_code>\r\n` +
+      `       <travel_code type="string">${sTradeCodes}</travel_code>\r\n` +
       `       <uwp type="string">${sBases}</uwp>\r\n` +
       `     </${nodeName}>\r\n`
 
@@ -215,6 +215,10 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
     }
     else if (bRefManualData) {
+
+      if (!isNaN(sName.substring(0,1))) {
+        sName = '_' + sName;
+      }
 
       const worldToStore =
         'name|' + sName + '\r\n' +
@@ -488,76 +492,99 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
     return aGovernmentType[sGovernmentType];
 
-  }
+}
 
-  async function getLawLevel(sLawLevel) {
+async function getLawLevel(sLawLevel) {
 
-    const aLawLevel = {};
+  const aLawLevel = {};
 
-    aLawLevel["0"] = "No restrictions – heavy armour and a handy weapon recommended...",
-    aLawLevel["1"] = "No Poison gas, explosives, undetectable weapons, WMD or Battle Dress",
-    aLawLevel["2"] = "No Portable energy and laser weapons or Combat armour",
-    aLawLevel["3"] = "No Military weapons or Flak armour",
-    aLawLevel["4"] = "No Light assault weapons and submachine guns or Cloth armour",
-    aLawLevel["5"] = "No Personal concealable weapons or Mesh armour",
-    aLawLevel["6"] = "No firearms except shotguns & stunners; carrying weapons discouraged",
-    aLawLevel["7"] = "No Shotguns",
-    aLawLevel["8"] = "No bladed weapons, stunners or visible armour",
-    aLawLevel["9"] = "No weapons, No armour"
+  aLawLevel["0"] = "No restrictions – heavy armour and a handy weapon recommended...",
+  aLawLevel["1"] = "No Poison gas, explosives, undetectable weapons, WMD or Battle Dress",
+  aLawLevel["2"] = "No Portable energy and laser weapons or Combat armour",
+  aLawLevel["3"] = "No Military weapons or Flak armour",
+  aLawLevel["4"] = "No Light assault weapons and submachine guns or Cloth armour",
+  aLawLevel["5"] = "No Personal concealable weapons or Mesh armour",
+  aLawLevel["6"] = "No firearms except shotguns & stunners; carrying weapons discouraged",
+  aLawLevel["7"] = "No Shotguns",
+  aLawLevel["8"] = "No bladed weapons, stunners or visible armour",
+  aLawLevel["9"] = "No weapons, No armour"
 
-    return aLawLevel[sLawLevel];
-  }
+  return aLawLevel[sLawLevel];
+}
 
-  async function createXMLDefinitionFile(sSector, sDefinitionFileName) {
+async function createXMLDefinitionFile(sSector, sDefinitionFileName) {
 
-    const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
-    '<root version="3.3" release="1|CoreRPG:4">\r\n' +
-      '  <name>' + sSector + ' Worlds Data</name>\r\n' +
-      '  <category></category>\r\n' +
-      '  <author>Colin `MadBeardMan` Richardson</author>\r\n' +
-      '  <ruleset>MGT2</ruleset>\r\n' +
-    '</root>'
+  const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
+  '<root version="3.3" release="1|CoreRPG:4">\r\n' +
+    '  <name>' + sSector + ' Worlds Data</name>\r\n' +
+    '  <category></category>\r\n' +
+    '  <author>Colin `MadBeardMan` Richardson</author>\r\n' +
+    '  <ruleset>MGT2</ruleset>\r\n' +
+  '</root>'
 
-    return fs.writeFileSync(sDefinitionFileName, sXML);
-  }
+  return fs.writeFileSync(sDefinitionFileName, sXML);
+}
 
-  async function createXMLDDBFile(sSector) {
+async function createXMLDDBFile(sSector) {
 
-    const sName = sSector.replace(/\s/g, '').toLowerCase() + 'worldsdata';
+  const sName = sSector.replace(/\s/g, '').toLowerCase() + 'worldsdata';
 
-    const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
-    '<root version="3.3" release="1|CoreRPG:4">\r\n' +
-    '  <library>\r\n' +
-    '    <worldsdata static="true">\r\n' +
-    '      <categoryname type="string"></categoryname>\r\n' +
-    `      <name type="string">${sName}</name>\r\n` +
-    '      <entries>\r\n' +
-    '        <worlds>\r\n' +
-    '          <librarylink type="windowreference">\r\n' +
-    '            <class>reference_list</class>\r\n' +
-    '            <recordname>..</recordname>\r\n' +
-    '          </librarylink>\r\n' +
-    '          <name type="string">Worlds</name>\r\n' +
-    '          <recordtype type="string">worlds</recordtype>\r\n' +
-    '        </worlds>\r\n' +
-    '      </entries>\r\n' +
-    '    </worldsdata>\r\n' +
-    '  </library>\r\n' +
-    '  <worlds>\r\n' +
-    '    <category name="" baseicon="0" decalicon="0">\r\n';
+  const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
+  '<root version="3.3" release="1|CoreRPG:4">\r\n' +
+  '  <library>\r\n' +
+  '    <worldsdata static="true">\r\n' +
+  '      <categoryname type="string"></categoryname>\r\n' +
+  `      <name type="string">${sName}</name>\r\n` +
+  '      <entries>\r\n' +
+  '        <worlds>\r\n' +
+  '          <librarylink type="windowreference">\r\n' +
+  '            <class>reference_list</class>\r\n' +
+  '            <recordname>..</recordname>\r\n' +
+  '          </librarylink>\r\n' +
+  '          <name type="string">Worlds</name>\r\n' +
+  '          <recordtype type="string">worlds</recordtype>\r\n' +
+  '        </worlds>\r\n' +
+  '      </entries>\r\n' +
+  '    </worldsdata>\r\n' +
+  '  </library>\r\n' +
+  '  <worlds>\r\n' +
+  '    <category name="" baseicon="0" decalicon="0">\r\n';
 
-    return writeToFile.write(sXML);
+  return writeToFile.write(sXML);
+}
 
-  }
+async function createXMLDDBFileEnd() {
 
-  async function createXMLDDBFileEnd() {
+  const sXML = '    </category>\r\n' +
+  '  </worlds>\r\n' +
+  '</root>\r\n';
 
-    const sXML = '    </category>\r\n' +
-    '  </worlds>\r\n' +
-    '</root>\r\n';
+  return writeToFile.write(sXML);
+}
 
-    return writeToFile.write(sXML);
-  }
+async function buildZip(sSector, sFileName, sDefinitionFileName) {
+
+  let sModuleName = `${sSector} Worlds Module.mod`;
+
+  console.log("Zipping Module");
+  var files = [{
+          source: sDefinitionFileName,
+          target: 'definition.xml'
+      },
+      {
+          source: sFileName,
+          target: 'db.xml'
+      }
+  ];
+  var zipModule = new EasyZip();
+  zipModule.batchAdd(files, {
+      ignore_missing: true
+  }, () => {
+    zipModule.writeToFile(sModuleName);
+  });
+
+}
+
 
 
 
