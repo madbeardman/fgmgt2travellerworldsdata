@@ -204,9 +204,9 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       `       <starport_quality_text type="string">${sStarportQualityText}</starport_quality_text>\r\n` +
       `       <tech_level type="string">${sTechLevel}</tech_level>\r\n` +
       `       <tech_level_text type="string">${sTechLevelText}</tech_level_text>\r\n` +
-      `       <trade_codes type="string">${sBases}</trade_codes>\r\n` +
-      `       <travel_code type="string">${sTradeCodes}</travel_code>\r\n` +
-      `       <uwp type="string">${sBases}</uwp>\r\n` +
+      `       <trade_codes type="string">${sTradeCodes}</trade_codes>\r\n` +
+      `       <travel_code type="string">${sZone}</travel_code>\r\n` +
+      `       <uwp type="string">${sUWP}</uwp>\r\n` +
       `     </${nodeName}>\r\n`
 
       nodeNumber++;
