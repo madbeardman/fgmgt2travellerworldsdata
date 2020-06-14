@@ -15,7 +15,7 @@ try {
 }
 
 // Configure this
-const sSector = 'Deneb';
+const sSector = 'Spinward Marches';
 const sBuildType = 'module';  // options: module, ref or world
 
 fetchSectorWorlds(sSector, sDataFolder, sBuildType);

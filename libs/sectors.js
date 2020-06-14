@@ -498,7 +498,7 @@ async function getLawLevel(sLawLevel) {
 
   const aLawLevel = {};
 
-  aLawLevel["0"] = "No restrictions – heavy armour and a handy weapon recommended...",
+  aLawLevel["0"] = "No restrictions - heavy armour and a handy weapon recommended...",
   aLawLevel["1"] = "No Poison gas, explosives, undetectable weapons, WMD or Battle Dress",
   aLawLevel["2"] = "No Portable energy and laser weapons or Combat armour",
   aLawLevel["3"] = "No Military weapons or Flak armour",
@@ -507,7 +507,11 @@ async function getLawLevel(sLawLevel) {
   aLawLevel["6"] = "No firearms except shotguns & stunners; carrying weapons discouraged",
   aLawLevel["7"] = "No Shotguns",
   aLawLevel["8"] = "No bladed weapons, stunners or visible armour",
-  aLawLevel["9"] = "No weapons, No armour"
+  aLawLevel["9"] = "No weapons, No armour",
+  aLawLevel["A"] = "No weapons, No armour",
+  aLawLevel["B"] = "No weapons, No armour",
+  aLawLevel["C"] = "No weapons, No armour",
+  aLawLevel["D"] = "No weapons, No armour"
 
   return aLawLevel[sLawLevel];
 }
