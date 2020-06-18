@@ -172,7 +172,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
     const sGovernmentType = sUWP.substring(5,6);
     const sGovernmentTypeText = await getGovernmentType(sGovernmentType);
     const sLawLevel = sUWP.substring(6,7);
-    const sLawLevelText = await getLawLevel(sLawLevel);
+    let sLawLevelText = await getLawLevel(sLawLevel);
     const sTechLevel = sUWP.substring(8,9);
     const sTechLevelText = 'Tech Level: ' + parseInt(sTechLevel,16);
 
@@ -214,10 +214,14 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       await writeToFile.write(worldToStore);
 
     }
-    else if (bRefManualData) {
+    else if (bWorldData) {
 
       if (!isNaN(sName.substring(0,1))) {
         sName = '_' + sName;
+      }
+
+      if (sLawLevelText.includes('&')) {
+        sLawLevelText = sLawLevelText.replace('&','&amp;');
       }
 
       const worldToStore =
@@ -511,7 +515,12 @@ async function getLawLevel(sLawLevel) {
   aLawLevel["A"] = "No weapons, No armour",
   aLawLevel["B"] = "No weapons, No armour",
   aLawLevel["C"] = "No weapons, No armour",
-  aLawLevel["D"] = "No weapons, No armour"
+  aLawLevel["D"] = "No weapons, No armour",
+  aLawLevel["E"] = "No weapons, No armour",
+  aLawLevel["F"] = "No weapons, No armour",
+  aLawLevel["G"] = "No weapons, No armour",
+  aLawLevel["H"] = "No weapons, No armour"
+
 
   return aLawLevel[sLawLevel];
 }

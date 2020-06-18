@@ -16,6 +16,6 @@ try {
 
 // Configure this
 const sSector = 'Spinward Marches';
-const sBuildType = 'module';  // options: module, ref or world
+const sBuildType = 'ref';  // options: module, ref or world
 
 fetchSectorWorlds(sSector, sDataFolder, sBuildType);
