@@ -137,8 +137,6 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
     const nGasGiants = parseInt(sPBG.substring(2,3));
     let sGasGiant = '';
 
-    console.log(sName);
-
     if (nGasGiants > 0) {
       sGasGiant = 'G';
     }
@@ -256,7 +254,6 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
         await writeToFile.write(worldToStore);
     } else {
-      console.log(sName);
         return `#tr;${sName};${sHexNbr};${sBases};2:${sUWP};${sTradeCodes};1:${sZone};2:${sAllegianceText};1:${sGasGiant}\r\n`;
     };
   };
