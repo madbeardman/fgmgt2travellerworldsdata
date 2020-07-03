@@ -15,7 +15,6 @@ try {
   process.exit(1);
 }
 
-// Configure this
 const sSector = process.env.SECTOR;
 const sBuildType = process.env.BUILD_TYPE;  // options: module, ref or system
 
