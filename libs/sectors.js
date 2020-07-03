@@ -103,7 +103,8 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
           '#ts;\r\n' +
           '#th;Name;Location;Bases;2:Statistics;Trade Codes;Travel Code;2:Allegiance;Gas Giants\r\n';
 
-          text.sort();
+          // removed so that in hexcode order
+          // text.sort();
 
           for (const sWorld of text) {
             worldData = worldData + await readLine(sSector, sSubSector, sWorld);
@@ -268,7 +269,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
     aAllegiances['Cs'] = 'Client State',
     aAllegiances['Dr'] = 'Droyne World',
     aAllegiances['Hv'] = 'Hive Federation',
-    aAllegiances['Im'] = 'Imperial',
+    aAllegiances['Im'] = 'Imperium',
     aAllegiances['Kk'] = "K'kree Two Thousand Worlds empire",
     aAllegiances['Na'] = '',
     aAllegiances['So'] = 'Solomani Confederation',
