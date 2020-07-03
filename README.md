@@ -4,11 +4,11 @@ To do this we use the TravellerMAP API's.  This amongst other things, allows thi
 
 <https://travellermap.com/doc/api>
 
-This includes the subsectors and all worlds within those subsectors.
+This includes the subsectors and all systems within those subsectors.
 
 The files are written as text files in the `./data` sub-folder using the sector name as the basis.
 
-The format of these files are fixed, one is for the Reference Manual and the other is for the World data.  There are plans to produce Fantasy Grounds mod file in a future build.
+The format of these files are fixed, one is for the Reference Manual, one is for the System data, and the last produces a .mod suitable for Fantasy Grounds.
 
 It's written using NodeJS v12.  Make sure you are using v12 and above before you run this.
 

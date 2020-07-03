@@ -4,12 +4,12 @@ const baseURL = 'https://travellermap.com/data/';
 const EasyZip = require('easy-zip2').EasyZip;
 let writeToFile;
 let bRefManualData = false;
-let bWorldData = false;
+let bSystemData = false;
 let bXMLModule = false
 let nodeNumber = 1;
 let sDefinitionFileName = '';
 
-module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildType) {
+module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildType) {
 
     let sFileName = `${sDataFolder}${sSector}`;
 
@@ -17,8 +17,8 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       case 'module':
         bXMLModule = true;
         break;
-      case 'world':
-        bWorldData = true;
+      case 'system':
+        bSystemData = true;
         break;
       default:
         bRefManualData = true;
@@ -29,8 +29,8 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       sFileName = `${sDataFolder}db.xml`;
       sDefinitionFileName = `${sDataFolder}definition.xml`;
       await createXMLDefinitionFile(sSector, sDefinitionFileName);
-    } else if (bWorldData) {
-      sFileName = sFileName + ' Worlds.txt'
+    } else if (bSystemData) {
+      sFileName = sFileName + ' Systems.txt'
     } else {
       sFileName = sFileName + ' Ref Manual.txt'
     }
@@ -64,7 +64,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       let json = JSON.parse(body);
 
       for (const subsector of json.Subsectors) {
-        await fetchsWorldData(sSector, subsector.Name, subsector.Index);
+        await fetchsSystemData(sSector, subsector.Name, subsector.Index);
       };
 
       if (bXMLModule) {
@@ -76,7 +76,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
   }
 
-  async function fetchsWorldData(sSector, sSubSector, sSubSectorIndex)
+  async function fetchsSystemData(sSector, sSubSector, sSubSectorIndex)
   {
 
     const options = {
@@ -96,7 +96,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
       const text = json.split('\r\n').filter(x => x);
 
       if (bRefManualData) {
-        let worldData =
+        let systemData =
           '#!;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
           '##;' + sSubSectorIndex + ' - ' + sSubSector + '\r\n' +
           '#wb;singletext\r\n' +
@@ -106,35 +106,35 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
           // removed so that in hexcode order
           // text.sort();
 
-          for (const sWorld of text) {
-            worldData = worldData + await readLine(sSector, sSubSector, sWorld);
+          for (const sSystem of text) {
+            systemData = systemData + await readLine(sSector, sSubSector, sSystem);
           }
 
-          worldData = worldData + '#te;\r\n';
+          systemData = systemData + '#te;\r\n';
 
-          return writeToFile.write(worldData);
+          return writeToFile.write(systemData);
 
       } else {
-        for (const sWorld of text) {
-          await readLine(sSector, sSubSector, sWorld);
+        for (const sSystem of text) {
+          await readLine(sSector, sSubSector, sSystem);
         };
       }
 
     });
   }
 
-  async function readLine(sSector, sSubsector, sWorldData) {
+  async function readLine(sSector, sSubsector, ssystemData) {
     const sSectorName = sSector;
     const sSubSectorName = sSubsector;
-    let sName = sWorldData.substring(0, 13).trim();
-    const sHexNbr = sWorldData.substring(14, 18).trim();
-    const sUWP = sWorldData.substring(19, 28).trim();
-    const sBases = sWorldData.substring(30, 31).trim();
-    const sCodesComments = sWorldData.substring(32, 47).trim();
-    const sZone = sWorldData.substring(48, 49).trim();
-    const sPBG = sWorldData.substring(51, 54).trim();
-    const sAllegiance = sWorldData.substring(55, 57).trim();
-    const sStellarData = sWorldData.substring(58, 73).trim();
+    let sName = ssystemData.substring(0, 13).trim();
+    const sHexNbr = ssystemData.substring(14, 18).trim();
+    const sUWP = ssystemData.substring(19, 28).trim();
+    const sBases = ssystemData.substring(30, 31).trim();
+    const sCodesComments = ssystemData.substring(32, 47).trim();
+    const sZone = ssystemData.substring(48, 49).trim();
+    const sPBG = ssystemData.substring(51, 54).trim();
+    const sAllegiance = ssystemData.substring(55, 57).trim();
+    const sStellarData = ssystemData.substring(58, 73).trim();
     const nGasGiants = parseInt(sPBG.substring(2,3));
     let sGasGiant = '';
 
@@ -180,7 +180,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
       const nodeName = 'id-' + String(nodeNumber).padStart(5, '0');
 
-      const worldToStore = `     <${nodeName}>\r\n` +
+      const systemToStore = `     <${nodeName}>\r\n` +
       `       <sector type="string">${sSectorName}</sector>\r\n` +
       `       <subsector type="string">${sSubSectorName}</subsector>\r\n` +
       `       <atmosphere_type type="string">${sAtmosphereType}</atmosphere_type>\r\n` +
@@ -211,10 +211,10 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
 
       nodeNumber++;
 
-      await writeToFile.write(worldToStore);
+      await writeToFile.write(systemToStore);
 
     }
-    else if (bWorldData) {
+    else if (bSystemData) {
 
       if (!isNaN(sName.substring(0,1))) {
         sName = '_' + sName;
@@ -224,7 +224,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
         sLawLevelText = sLawLevelText.replace('&','&amp;');
       }
 
-      const worldToStore =
+      const systemToStore =
         'name|' + sName + '\r\n' +
         'sector|' + sSectorName + '\r\n' +
         'subsector|' + sSubSectorName + '\r\n' +
@@ -253,7 +253,7 @@ module.exports = async function fetchSectorWorlds(sSector, sDataFolder, sBuildTy
         'tech_level_text|' + sTechLevelText + '\r\n' +
         '\r\n'
 
-        await writeToFile.write(worldToStore);
+        await writeToFile.write(systemToStore);
     } else {
         return `#tr;${sName};${sHexNbr};${sBases};2:${sUWP};${sTradeCodes};1:${sZone};2:${sAllegianceText};1:${sGasGiant}\r\n`;
     };
@@ -529,9 +529,9 @@ async function createXMLDefinitionFile(sSector, sDefinitionFileName) {
 
   const sXML = '<?xml version="1.0" encoding="iso-8859-1"?>\r\n' +
   '<root version="3.3" release="1|CoreRPG:4">\r\n' +
-    '  <name>' + sSector + ' Worlds Data</name>\r\n' +
+    '  <name>' + sSector + ' Systems Data</name>\r\n' +
     '  <category></category>\r\n' +
-    '  <author>Sector World Data</author>\r\n' +
+    '  <author>Sector System Data</author>\r\n' +
     '  <ruleset>MGT2</ruleset>\r\n' +
   '</root>'
 

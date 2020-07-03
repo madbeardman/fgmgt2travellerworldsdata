@@ -1,7 +1,8 @@
+require('dotenv').config()
 const fs = require('fs');
 const path = require("path");
 const sDataFolder = path.join(__dirname, 'data/');
-const fetchSectorWorlds = require('./libs/sectors');
+const fetchSectorSystems = require('./libs/sectors');
 
 // check we have this folder
 try {
@@ -15,7 +16,7 @@ try {
 }
 
 // Configure this
-const sSector = 'Spinward Marches';
-const sBuildType = 'ref';  // options: module, ref or world
+const sSector = process.env.SECTOR;
+const sBuildType = process.env.BUILD_TYPE;  // options: module, ref or system
 
-fetchSectorWorlds(sSector, sDataFolder, sBuildType);
+fetchSectorSystems(sSector, sDataFolder, sBuildType);

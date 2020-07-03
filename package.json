@@ -1,7 +1,7 @@
 {
   "name": "sectorconsumer",
   "version": "1.0.0",
-  "description": "Consumes sector, subsector and worlds data from Travellermap and puts the format ready for PAR5E integration",
+  "description": "Consumes sector, subsector and system data from Travellermap and puts the format ready for PAR5E integration",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,6 +10,7 @@
   "author": "Colin 'MadBeardMan' Richardson",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "easy-zip2": "^3.1.0",
     "line-reader": "^0.4.0",
     "node-zip": "^1.1.1",
