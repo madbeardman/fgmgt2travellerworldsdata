@@ -34,11 +34,13 @@ There are currently no Unit Tests.
 
 At the moment, there's no UI with this app, I don't see the need for it for my own needs, but might create a UI in the future, it really needs refactoring now everything is there.
 
-Editing the main file, `index.js` at the top you'll find something like:
+You will need an .env file (located in the root folder you'll find an example `env sample` - you can rename this).
 
-> const sSector = 'Reft';
+Editing the env file:
 
-> const sBuildType = 'module';
+> SECTOR=Reft
+
+> BUILD_TYPE=module
 
 You can change the sector by editing it here, note that it's case senstive and spelling must be accurate, otherwise an error will be thrown.
 

@@ -1,0 +1,4 @@
+SECTOR=Deneb
+BUILD_TYPE=ref
+#BUILD_TYPE=module
+#BUILD_TYPE=system
