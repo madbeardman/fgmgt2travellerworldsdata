@@ -1,6 +1,6 @@
 {
   "name": "sectorconsumer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Consumes sector, subsector and system data from Travellermap and puts the format ready for PAR5E integration",
   "main": "index.js",
   "scripts": {
