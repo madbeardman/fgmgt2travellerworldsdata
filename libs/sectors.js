@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const request = require('request-promise');
 const baseURL = 'https://travellermap.com/data/';
@@ -103,8 +104,10 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
           '#ts;\r\n' +
           '#th;Name;Location;Bases;2:Statistics;Trade Codes;Travel Code;2:Allegiance;Gas Giants\r\n';
 
-          // removed so that in hexcode order
-          // text.sort();
+          // alpha = by system name, otherwise it's in hex order
+          if (process.env.SORT === "alpha") {
+            text.sort();
+          }
 
           for (const sSystem of text) {
             systemData = systemData + await readLine(sSector, sSubSector, sSystem);
@@ -123,23 +126,33 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
     });
   }
 
-  async function readLine(sSector, sSubsector, ssystemData) {
+  async function readLine(sSector, sSubsector, sSystemData) {
     const sSectorName = sSector;
     const sSubSectorName = sSubsector;
-    let sName = ssystemData.substring(0, 13).trim();
-    const sHexNbr = ssystemData.substring(14, 18).trim();
-    const sUWP = ssystemData.substring(19, 28).trim();
-    const sBases = ssystemData.substring(30, 31).trim();
-    const sCodesComments = ssystemData.substring(32, 47).trim();
-    const sZone = ssystemData.substring(48, 49).trim();
-    const sPBG = ssystemData.substring(51, 54).trim();
-    const sAllegiance = ssystemData.substring(55, 57).trim();
-    const sStellarData = ssystemData.substring(58, 73).trim();
+    let sName = sSystemData.substring(0, 13).trim();
+    const sHexNbr = sSystemData.substring(14, 18).trim();
+    const sUWP = sSystemData.substring(19, 28).trim();
+    let sBases = sSystemData.substring(30, 31).trim();
+    const sCodesComments = sSystemData.substring(32, 47).trim();
+    const sZone = sSystemData.substring(48, 49).trim();
+    const sPBG = sSystemData.substring(51, 54).trim();
+    const sAllegiance = sSystemData.substring(55, 57).trim();
+    const sStellarData = sSystemData.substring(58, 73).trim();
     const nGasGiants = parseInt(sPBG.substring(2,3));
-    let sGasGiant = '';
+    let sGasGiant = ''
 
+    // if (sSubsector === "Pretoria") {
+    //   console.log(sSystemData);
+    //   console.log(sBases);
+    // }
+
+    // now sort the fields for Mongoose
     if (nGasGiants > 0) {
       sGasGiant = 'G';
+    }
+
+    if (sBases === 'A') {
+      sBases = 'N S';
     }
 
     let sAllegianceText = await getAllegiance(sAllegiance);
@@ -357,7 +370,7 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
     aTradeCodes['Ga'] = 'Garden',
     aTradeCodes['Hi'] = 'High Population',
     aTradeCodes['Ht'] = 'High Tech',
-    aTradeCodes['Ie'] = 'Ice-Capped',
+    aTradeCodes['Ic'] = 'Ice-Capped',
     aTradeCodes['In'] = 'Industrial',
     aTradeCodes['Lo'] = 'Low Population',
     aTradeCodes['Lt'] = 'Low Tech',

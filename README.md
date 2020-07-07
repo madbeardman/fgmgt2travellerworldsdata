@@ -42,6 +42,8 @@ Editing the env file:
 
 > BUILD_TYPE=module
 
+> SORT=alpha
+
 You can change the sector by editing it here, note that it's case senstive and spelling must be accurate, otherwise an error will be thrown.
 
 ### License
