@@ -81,7 +81,7 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
   {
 
     const options = {
-      url: encodeURI(baseURL + `${sSector}/${sSubSector}/sec?header=0&metadata=0&sscoords=1`),
+      url: encodeURI(baseURL + `${sSector}/${sSubSector}/sec?header=0&metadata=0`),
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -319,9 +319,9 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
     aAllegiances['Gc'] = 'Gniivi Collective',
     aAllegiances['Hv'] = 'Hive Federation',
     aAllegiances['Id'] = 'Islaiat Dominate',
-    aAllegiances['Ju'] = 'Julian Protectorate',
-    aAllegiances['Cs'] = 'Julian Protectorate',
-    aAllegiances['Ju'] = 'Julian Protectorate',
+    aAllegiances['Ju'] = 'Imperium',
+    aAllegiances['Cs'] = 'Imperium',
+    aAllegiances['Ju'] = 'Imperium',
     aAllegiances['Kl'] = 'Khuur League',
     aAllegiances['Lr'] = 'Loyal Nineworlds Republic',
     aAllegiances['Kk'] = "K'kree Two Thousand Worlds empire",
@@ -353,6 +353,12 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
     aAllegiances['Ev'] = 'Empire of Varroerth',
     aAllegiances['Pw'] = 'People of Wanz',
     aAllegiances['Wp'] = 'Windhorn Pact of Two'
+
+
+    // not Mongoose supported
+    // aAllegiances['Ju'] = 'Julian Protectorate',
+    // aAllegiances['Cs'] = 'Julian Protectorate',
+    // aAllegiances['Ju'] = 'Julian Protectorate',
 
     return aAllegiances[sAllegiance];
 
