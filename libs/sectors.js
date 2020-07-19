@@ -80,8 +80,14 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
   async function fetchsSystemData(sSector, sSubSector, sSubSectorIndex)
   {
 
+    let sExtraParameters = '';
+
+    if (process.env.HEXCODE === "subsector") {
+      sExtraParameters = '&sscoords=1';
+    }
+
     const options = {
-      url: encodeURI(baseURL + `${sSector}/${sSubSector}/sec?header=0&metadata=0`),
+      url: encodeURI(baseURL + `${sSector}/${sSubSector}/sec?header=0&metadata=0${sExtraParameters}`),
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -153,6 +159,10 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
 
     if (sBases === 'A') {
       sBases = 'N S';
+    }
+
+    if (sBases === 'F') {
+      sBases = 'Z M';
     }
 
     let sAllegianceText = await getAllegiance(sAllegiance);

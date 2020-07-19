@@ -44,7 +44,15 @@ Editing the env file:
 
 > SORT=alpha
 
+> HEXCODE=sector
+
 You can change the sector by editing it here, note that it's case senstive and spelling must be accurate, otherwise an error will be thrown.
+
+*Build Type* - this can be 'module', 'ref' or 'system' (defaults to ref)
+
+*Sort* - this can be 'alpha' or left empty
+
+*Hexcode* - this can be 'sector' or 'subsector' (defaults to sector)
 
 ### License
 
@@ -53,5 +61,6 @@ This application is under the ISC License, however the data generated is not, pl
 <https://www.farfuture.net/FFEFairUsePolicy2008.pdf>
 
 If you use this application, please give me credit, thanks.
+
 Colin 'MadBeardMan' Richardson
 
