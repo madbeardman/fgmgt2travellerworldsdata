@@ -1,6 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const request = require('request-promise');
+const { rejects } = require('assert');
 const baseURL = 'https://travellermap.com/data/';
 const EasyZip = require('easy-zip2').EasyZip;
 let writeToFile;
@@ -98,7 +99,14 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
     await request(options, async (err, res, body) => {
       console.log(sSubSector);
       console.log('='.repeat(sSubSector.length));
-      let json = JSON.parse(body);
+
+      // make it test the json, then if there's an error
+      let json;
+      try {
+        json = JSON.parse(body);
+      } catch (e) {
+        return;
+      }
 
       const text = json.split('\r\n').filter(x => x);
 
@@ -129,7 +137,11 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
         };
       }
 
-    });
+    }).catch((e) => {
+      // handle the error here
+      console.log('Unable to parse that SubSector');
+      return;
+    }) ;
   }
 
   async function readLine(sSector, sSubsector, sSystemData) {
