@@ -165,6 +165,10 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
       sBases = 'Z M';
     }
 
+    if (sCodesComments.includes('RsE')) {
+      sBases = sBases.trim() + ' RS';
+    }
+
     let sAllegianceText = await getAllegiance(sAllegiance);
     if (!sAllegianceText) {
       sAllegianceText = '';
