@@ -159,8 +159,9 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
     const nGasGiants = parseInt(sPBG.substring(2,3));
     let sGasGiant = ''
 
-    // if (sSubsector === "Pretoria") {
+    // if (sSubsector === "Khukish") {
     //   console.log(sSystemData);
+    //   console.log(sCodesComments);
     //   console.log(sBases);
     // }
 
@@ -177,7 +178,7 @@ module.exports = async function fetchSectorSystems(sSector, sDataFolder, sBuildT
       sBases = 'Z M';
     }
 
-    if (sCodesComments.includes('RsE')) {
+    if (sCodesComments.includes('RsE') || sCodesComments.includes('RsB')) {
       sBases = sBases.trim() + ' RS';
     }
 
