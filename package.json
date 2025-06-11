@@ -1,20 +1,22 @@
 {
   "name": "sectorconsumer",
-  "version": "1.0.1",
-  "description": "Consumes sector, subsector and system data from Travellermap and puts the format ready for PAR5E integration",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Consumes sector, subsector and system data from TravellerMap and outputs Fantasy Grounds-compatible data formats.",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "build": "node src/index.js Spinward Marches module",
+    "build:system": "node src/index.js Spinward Marches system",
+    "build:refmanual": "node src/index.js Spinward Marches refmanual"
   },
   "author": "Colin 'MadBeardMan' Richardson",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "easy-zip2": "^3.1.0",
-    "line-reader": "^0.4.0",
-    "node-zip": "^1.1.1",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.5"
+    "adm-zip": "^0.5.16",
+    "axios": "^1.6.8"
+  },
+  "devDependencies": {
+    "dotenv": "^16.5.0"
   }
 }
