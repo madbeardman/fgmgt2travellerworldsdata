@@ -1,66 +1,76 @@
-This app is written to generate the data files (text) for the Fantasy Grounds internal parsing application.  It saves the many hours building them by hand, or copying and pasting them from PDFs etc.
+# ⚠️ DEPRECATED – See New Version Below
 
-To do this we use the TravellerMAP API's.  This amongst other things, allows this app to pull down the UWP data for a sector split by subsectors.
+🚨 This repository is now **deprecated** and no longer actively maintained. It has been fully updated to work again if you need a CLI/NodeJS version.
 
-<https://travellermap.com/doc/api>
+👉 For the latest version with a web-based interface, please use the new frontend-enabled application here:  
+**[https://github.com/madbeardman/fgmgt-world-generator-frontend](https://github.com/madbeardman/fgmgt-world-generator-frontend)**
 
-This includes the subsectors and all systems within those subsectors.
+---
 
-The files are written as text files in the `./data` sub-folder using the sector name as the basis.
+## Fantasy Grounds Traveller World Generator (CLI)
 
-The format of these files are fixed, one is for the Reference Manual, one is for the System data, and the last produces a .mod suitable for Fantasy Grounds.
+This app is written to generate the data files (text) for the Fantasy Grounds internal parsing application. It saves many hours building them by hand or copying and pasting from PDFs.
 
-It's written using NodeJS v12.  Make sure you are using v12 and above before you run this.
+It uses the [TravellerMap API](https://travellermap.com/doc/api) to pull down UWP data for a sector, split by subsectors. This includes the subsector data and all systems within them.
 
-**To install**
+The files are written to the `./data` folder using the sector name as the basis. Three formats are supported:
+- `refmanual` (for FG Reference Manual pages)
+- `system` (for plain-text system listings)
+- `module` (generates a `.mod` zip for use in Fantasy Grounds)
 
-After cloning this repo, make sure you're in the repo folder inside a terminal window
+## ⚙️ Requirements
 
-`npm i`
+- Node.js v12 or later
 
-That should install all the libraries required for the app.
+## 📦 Installation
 
-**To Run**
+Clone this repo and run:
 
-`npm start`
+```bash
+npm install
+```
 
-Please note that if data already exists for the sector, it will be replaced with the new data.
+This installs all required libraries.
 
-**Tests**
+## 🚀 Running the Generator
 
-There are currently no Unit Tests.
+Use:
 
-### Configuring what data format is used
+```bash
+npm start
+```
 
-At the moment, there's no UI with this app, I don't see the need for it for my own needs, but might create a UI in the future, it really needs refactoring now everything is there.
+> ⚠️ Existing data for the selected sector will be overwritten.
 
-You will need an .env file (located in the root folder you'll find an example `env sample` - you can rename this).
+## 🔧 Configuration
 
-Editing the env file:
+Create a `.env` file in the root directory. Rename `env sample` to `.env` as a starting point.
 
-> SECTOR=Reft
+### Example `.env` configuration:
 
-> BUILD_TYPE=module
+```env
+SECTOR=Reft
+BUILD_TYPE=module
+SORT=alpha
+HEXCODE=sector
+```
 
-> SORT=alpha
+- `SECTOR`: Sector name (case-sensitive, must match TravellerMap spelling)
+- `BUILD_TYPE`: One of `module`, `ref`, or `system` (defaults to `ref`)
+- `SORT`: Optional, use `alpha` to sort systems alphabetically
+- `HEXCODE`: `sector` or `subsector` (default is `sector`)
 
-> HEXCODE=sector
+## 🧪 Tests
 
-You can change the sector by editing it here, note that it's case senstive and spelling must be accurate, otherwise an error will be thrown.
+There are no unit tests at this time.
 
-*Build Type* - this can be 'module', 'ref' or 'system' (defaults to ref)
+## 📄 License
 
-*Sort* - this can be 'alpha' or left empty
+This application is licensed under the ISC License.
 
-*Hexcode* - this can be 'sector' or 'subsector' (defaults to sector)
+However, the data it generates is subject to the Far Future Enterprises Fair Use Policy.  
+See: [https://www.farfuture.net/FFEFairUsePolicy2008.pdf](https://www.farfuture.net/FFEFairUsePolicy2008.pdf)
 
-### License
+If you use this application, please credit:
 
-This application is under the ISC License, however the data generated is not, please see here for further information:
-
-<https://www.farfuture.net/FFEFairUsePolicy2008.pdf>
-
-If you use this application, please give me credit, thanks.
-
-Colin 'MadBeardMan' Richardson
-
+**Colin 'MadBeardMan' Richardson**

@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "server": "node src/backend/server.js",
     "build": "node src/index.js Spinward Marches module",
     "build:system": "node src/index.js Spinward Marches system",
     "build:refmanual": "node src/index.js Spinward Marches refmanual"
@@ -14,7 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "adm-zip": "^0.5.16",
-    "axios": "^1.6.8"
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "dotenv": "^16.5.0"
